@@ -1,0 +1,40 @@
+---
+title: "Capital Bikeshare Stations in DC"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+
+library(tidyverse)
+library(leaflet)
+```
+
+
+```{r}
+# load data
+stations <- read_rds('data/stations.rds')
+dc.cbd <- read_rds('data/dc.cbd.rds')
+dc.tracts <- read_rds('data/dc.tracts.rds')
+
+# vis
+# bike icon
+awesome <- makeAwesomeIcon(
+  icon = "motorcycle",
+  iconColor = "black",
+  markerColor = "blue",
+  library = "fa"
+)
+
+leaflet(stations) %>% # like ggplot()
+  addTiles() %>% # add the map
+  addPolygons(data = dc.cbd, color = "#f77", weight = 2, fillOpacity = 0.3) |>
+  addPolygons(data = dc.tracts, weight = 2, label = ~NAME, popup = ~NAME, fillOpacity = 0.1) |>
+  addAwesomeMarkers(icon = awesome, label = ~station, popup = ~station, clusterOptions = markerClusterOptions()) |>
+  setView(-77.04, 38.9, zoom = 12)
+```
+
+
